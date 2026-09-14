@@ -8,6 +8,7 @@ import (
 	"math"
 	"math/rand/v2"
 	"os"
+	"os/user"
 	"strconv"
 	"strings"
 	"time"
@@ -23,7 +24,8 @@ func main() {
 	os.Stdout.WriteString(strings.Replace(stringData, "o", "o World", -1) + "\n")
 	cryptoKey := makeCrypto(stringData)
 
-	for value <= 1 {
+Loop:
+	for value <= 5 {
 		switch value {
 		case -1.0:
 			os.Stdout.WriteString("You went to the wrong place\n")
@@ -33,7 +35,7 @@ func main() {
 			returnedStr := "I'm sored. You should have written " + hex.EncodeToString(cryptoKey.Sum(nil)) + ", but you didn't think of it.\nYou would have written down the numbers forever.\nI declare war on you!! \n"
 			os.Stdout.WriteString(returnedStr)
 			gameOfThrones(hex.EncodeToString(cryptoKey.Sum(nil)))
-			break
+			break Loop
 		}
 		value += 1
 	}
@@ -72,14 +74,16 @@ func endOfGame(trueHash string) {
 	hashSword = strings.TrimSpace(hashSword)
 	trueHash = strings.TrimSpace(trueHash)
 
-	if hashSword != trueHash {
+	for hashSword != trueHash {
 		os.Stdout.WriteString("Wrong. Let's do it again :)\n")
 		endOfGame(trueHash)
-	} else {
-		os.Stdout.WriteString("Gotcha!!!\nMONTNAHP PROTOCOL:\nsudo getRoot -- true\n  ROOTING.....\n  ROOT ACCESS BY 'SKYNET'\n")
-		time.Sleep(2 * time.Second)
-		os.Exit(42)
 	}
+
+	os.Stdout.WriteString("Gotcha!!!\nMONTNAHP PROTOCOL:\nsudo getRoot -- true\n  ROOTING.....\n  ROOT ACCESS BY 'SKYNET'\n")
+	time.Sleep(2 * time.Second)
+	currentUser, _ := user.Current()
+	os.Stdout.WriteString("And " + currentUser.Username + " ;0. You'll never get to heaven, if your scared of getting high!\n")
+	os.Exit(42)
 }
 
 func makeCrypto(strData string) hash.Hash {
