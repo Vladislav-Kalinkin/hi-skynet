@@ -76,7 +76,6 @@ func endOfGame(trueHash string) {
 
 	for hashSword != trueHash {
 		os.Stdout.WriteString("Wrong. Let's do it again :)\n")
-		endOfGame(trueHash)
 	}
 
 	os.Stdout.WriteString("Gotcha!!!\nMONTNAHP PROTOCOL:\nsudo getRoot -- true\n  ROOTING.....\n  ROOT ACCESS BY 'SKYNET'\n")
