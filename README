@@ -1,0 +1,17 @@
+Hi, Skynet
+============
+
+A joke experimental platform for me to learn the Go language, without using AI to generate code.
+
+Quick Start
+-----------
+
+git clone https://github.com/Vladislav-Kalinkin/hi-skynet
+cd hi-skynet
+go run main.go
+
+AI Rules
+-----------------------
+
+In this project, it can only be used to study language functions as one of the replacements or additions to documentation.
+It is forbidden to use it to create code in this repository
