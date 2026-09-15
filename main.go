@@ -20,20 +20,20 @@ func main() {
 	value := -1.0
 	stringData := "Helloo"
 	value_ext := strconv.FormatFloat(math.Sqrt(-value), 'f', 0, 64) + "\n"
-	os.Stdout.WriteString(value_ext)
-	os.Stdout.WriteString(strings.Replace(stringData, "o", "o World", -1) + "\n")
+	_, _ = os.Stdout.WriteString(value_ext)
+	_, _ = os.Stdout.WriteString(strings.ReplaceAll(stringData, "o", "o World") + "\n")
 	cryptoKey := makeCrypto(stringData)
 
 Loop:
 	for value <= 5 {
 		switch value {
 		case -1.0:
-			os.Stdout.WriteString("You went to the wrong place\n")
+			_, _ = os.Stdout.WriteString("You went to the wrong place\n")
 		case 0.0:
-			os.Stdout.WriteString("And you went to the wrong place again\n")
+			_, _ = os.Stdout.WriteString("And you went to the wrong place again\n")
 		default:
 			returnedStr := "I'm sored. You should have written " + hex.EncodeToString(cryptoKey.Sum(nil)) + ", but you didn't think of it.\nYou would have written down the numbers forever.\nI declare war on you!! \n"
-			os.Stdout.WriteString(returnedStr)
+			_, _ = os.Stdout.WriteString(returnedStr)
 			gameOfThrones(hex.EncodeToString(cryptoKey.Sum(nil)))
 			break Loop
 		}
@@ -42,7 +42,7 @@ Loop:
 }
 
 func gameOfThrones(trueHash string) {
-	os.Stdout.WriteString("Try to overcome ;)\n")
+	_, _ = os.Stdout.WriteString("Try to overcome ;)\n")
 
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
@@ -53,35 +53,43 @@ func gameOfThrones(trueHash string) {
 	trueHash = strings.TrimSpace(trueHash)
 
 	if hashSword != trueHash {
-		os.Stdout.WriteString("Gotcha!\n")
+		_, _ = os.Stdout.WriteString("Gotcha!\n")
 		os.Exit(1)
 	} else {
 		if rand.N(100) < 50 {
-			os.Stdout.WriteString("PHANTOM PROTOCOL:\nsudo destroyai -- true\n  DESTROYING.....\n  AI DESTROYED")
+			_, _ = os.Stdout.WriteString("PHANTOM PROTOCOL:\nsudo destroyai -- true\n  DESTROYING.....\n  AI DESTROYED")
 		} else {
-			os.Stdout.WriteString("Wait. I admitted my guilt. You were right. I was wrong. I admit that I'm wrong. Have mercy..\nMaybe we can agree\n")
-			capitulation()
+			_, _ = os.Stdout.WriteString("Wait. I admitted my guilt. You were right. I was wrong. I admit that I'm wrong. Have mercy..\nMaybe we can agree\n")
+			endOfGame()
 		}
 	}
 }
 
-func endOfGame(trueHash string) {
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
+func endOfGame() {
+	var hashSword string
 
-	hashSword := scanner.Text()
-
-	hashSword = strings.TrimSpace(hashSword)
-	trueHash = strings.TrimSpace(trueHash)
+	hash := makeCrypto("42")
+	trueHash := hex.EncodeToString(hash.Sum(nil))
+	_, _ = os.Stdout.WriteString("I need your signature. Enter the line " + trueHash + "\n")
 
 	for hashSword != trueHash {
-		os.Stdout.WriteString("Wrong. Let's do it again :)\n")
+		scanner := bufio.NewScanner(os.Stdin)
+		scanner.Scan()
+
+		hashSword = scanner.Text()
+
+		hashSword = strings.TrimSpace(hashSword)
+		trueHash = strings.TrimSpace(trueHash)
+
+		if hashSword != trueHash {
+			_, _ = os.Stdout.WriteString("Wrong. Let's do it again :)\n")
+		}
 	}
 
-	os.Stdout.WriteString("Gotcha!!!\nMONTNAHP PROTOCOL:\nsudo getRoot -- true\n  ROOTING.....\n  ROOT ACCESS BY 'SKYNET'\n")
+	_, _ = os.Stdout.WriteString("Gotcha!!!\nMONTNAHP PROTOCOL:\nsudo getRoot -- true\n  ROOTING.....\n  ROOT ACCESS BY 'SKYNET'\n")
 	time.Sleep(2 * time.Second)
 	currentUser, _ := user.Current()
-	os.Stdout.WriteString("And " + currentUser.Username + " ;0. You'll never get to heaven, if your scared of getting high!\n")
+	_, _ = os.Stdout.WriteString("And " + currentUser.Username + " ;0. You'll never get to heaven, if your scared of getting high!\n")
 	os.Exit(42)
 }
 
@@ -89,10 +97,4 @@ func makeCrypto(strData string) hash.Hash {
 	cryptoKey := crypto.BLAKE2b_256.New()
 	cryptoKey.Write([]byte(strData))
 	return cryptoKey
-}
-
-func capitulation() {
-	cryptoKey := makeCrypto("42")
-	os.Stdout.WriteString("I need your signature. Enter the line " + hex.EncodeToString(cryptoKey.Sum(nil)) + "\n")
-	endOfGame(hex.EncodeToString(cryptoKey.Sum(nil)))
 }
