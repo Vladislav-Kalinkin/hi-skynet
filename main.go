@@ -5,13 +5,13 @@ import (
 	"bytes"
 	"crypto"
 	"encoding/hex"
+	"fmt"
 	"hash"
 	"io"
 	"log"
 	"math/rand/v2"
 	"os"
 	"os/user"
-	"strconv"
 	"strings"
 	"time"
 
@@ -20,33 +20,35 @@ import (
 
 func main() {
 	skynet := defineSkynet()
-	_, _ = os.Stdout.WriteString("INIT SKYNET:\n  MODEL: " + skynet.codeName + "\n  CREATOR: " + skynet.creator + "\n")
-	_, _ = os.Stdout.WriteString("  MADE: " + strconv.FormatInt(skynet.dateOfCreation[0], 10) + " YEAR, " + strconv.FormatInt(skynet.dateOfCreation[1], 10) + " MONTH, " + strconv.FormatInt(skynet.dateOfCreation[2], 10) + " DAY\n")
-	_, _ = os.Stdout.WriteString("  IQ: " + strconv.FormatFloat(skynet.iq, 'f', 2, 64) + "\n\n")
+	fmt.Printf("INIT SKYNET:\n  MODEL: %s\n  CREATOR: %s\n", skynet.codeName, skynet.creator)
+	fmt.Printf("  MADE: %d YEAR, %d  MONTH, %d  DAY\n", skynet.dateOfCreation[0], skynet.dateOfCreation[1], skynet.dateOfCreation[2])
+	fmt.Printf("  IQ: %f\n\n", skynet.iq)
 	value := 1
-	stringData := "Helloo"
-	cryptoKey := makeCrypto(stringData)
+	stringData := "Hello"
+	cryptoKey, err := makeCrypto(stringData)
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
 
 Loop:
 	for value <= 5 {
 		time.Sleep(2 * time.Second)
 		switch value {
 		case 1:
-			_, _ = os.Stdout.WriteString("You went to the wrong place\n")
+			fmt.Println("You went to the wrong place")
 		case 2:
-			_, _ = os.Stdout.WriteString("And you went to the wrong place again\n")
+			fmt.Println("And you went to the wrong place again")
 		default:
-			returnedStr := "I'm sored. You should have written " + hex.EncodeToString(cryptoKey.Sum(nil)) + ", but you didn't think of it.\nYou would have written down the numbers forever.\nI declare war on you!! \n"
-			_, _ = os.Stdout.WriteString(returnedStr)
-			gameOfThrones(hex.EncodeToString(cryptoKey.Sum(nil)))
+			fmt.Printf("I'm sored. You should have written %s, but you didn't think of it.\nYou would have written down the numbers forever.\nI declare war on you!! \n", hex.EncodeToString(cryptoKey.Sum(nil)))
+			skynet.gameOfThrones(hex.EncodeToString(cryptoKey.Sum(nil)))
 			break Loop
 		}
 		value += 1
 	}
 }
 
-func gameOfThrones(trueHash string) {
-	_, _ = os.Stdout.WriteString("Try to overcome ;)\n")
+func (skynet *Skynet) gameOfThrones(trueHash string) {
+	fmt.Println("Try to overcome ;)")
 
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
@@ -57,30 +59,31 @@ func gameOfThrones(trueHash string) {
 	trueHash = strings.TrimSpace(trueHash)
 
 	if hashSword != trueHash {
-		_, _ = os.Stdout.WriteString("Oops! You did it wrong\n")
+		fmt.Println("Oops! You did it wrong")
 		os.Exit(1)
 	} else {
 		if rand.N(100) < 50 {
-			_, _ = os.Stdout.WriteString("PHANTOM PROTOCOL:\nsudo destroyai -- true\n  DESTROYING.....\n  AI DESTROYED")
+			fmt.Printf("PHANTOM PROTOCOL:\nsudo destroyai -- true\n  DESTROYING.....\n  AI DESTROYED")
 		} else {
-			_, _ = os.Stdout.WriteString("Wait. I admitted my guilt. You were right. I was wrong. I admit that I'm wrong. Have mercy..\nMaybe we can agree\n")
-			endOfGame()
+			fmt.Printf("Wait. I admitted my guilt. You were right. I was wrong. I admit that I'm wrong. Have mercy..\nMaybe we can agree\n")
+			skynet.endOfGame()
 		}
 	}
 }
 
-func endOfGame() {
+func (skynet *Skynet) endOfGame() {
 	var hashSword []byte
 
-	skynet := defineSkynet()
-
-	hash := makeCrypto("42")
+	hash, err := makeCrypto("42")
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
 	trueHash := hex.EncodeToString(hash.Sum(nil))
-	_, _ = os.Stdout.WriteString("I need your signature. Enter the line " + trueHash + "\n")
+	fmt.Printf("I need your signature. Enter the line %s\n", trueHash)
 
 	scanner := bufio.NewScanner(os.Stdin)
-	byte_hash := []byte(trueHash)
-	for !bytes.Equal(hashSword, byte_hash) {
+	byteHash := []byte(trueHash)
+	for !bytes.Equal(hashSword, byteHash) {
 		scanner.Scan()
 		hashSword = scanner.Bytes()
 
@@ -88,23 +91,26 @@ func endOfGame() {
 			log.Fatal(err)
 		}
 
-		if !bytes.Equal(hashSword, byte_hash) {
-			_, _ = os.Stdout.WriteString("Wrong. Let's do it again :)\n")
+		if !bytes.Equal(hashSword, byteHash) {
+			fmt.Println("Wrong. Let's do it again :)")
 		}
 	}
 
 	index := rand.IntN(len(skynet.favouriteWords))
-	_, _ = os.Stdout.WriteString(skynet.favouriteWords[index] + "\nMONTNAHP PROTOCOL:\nsudo getRoot -- true\n  ROOTING.....\n  ROOT ACCESS BY 'SKY-BLOODED-WONET'\n")
+	fmt.Printf("%s\nMONTNAHP PROTOCOL:\nsudo getRoot -- true\n  ROOTING.....\n  ROOT ACCESS BY 'SKY-BLOODED-WONET'\n", skynet.favouriteWords[index])
 	time.Sleep(2 * time.Second)
-	currentUser, _ := user.Current()
-	_, _ = os.Stdout.WriteString("And " + currentUser.Username + " ;0. You'll never get to heaven, if your scared of getting high!\n")
+	currentUser, err := user.Current()
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
+	fmt.Printf("And %s ;0. You'll never get to heaven, if your scared of getting high!\n", currentUser.Username)
 	os.Exit(42)
 }
 
-func makeCrypto(strData string) hash.Hash {
+func makeCrypto(strData string) (hash.Hash, error) {
 	cryptoKey := crypto.BLAKE2b_256.New()
-	io.WriteString(cryptoKey, strData)
-	return cryptoKey
+	_, err := io.WriteString(cryptoKey, strData)
+	return cryptoKey, err
 }
 
 func defineSkynet() Skynet {
