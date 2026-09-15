@@ -6,6 +6,7 @@ import (
 	"crypto"
 	"encoding/hex"
 	"hash"
+	"io"
 	"log"
 	"math/rand/v2"
 	"os"
@@ -56,7 +57,7 @@ func gameOfThrones(trueHash string) {
 	trueHash = strings.TrimSpace(trueHash)
 
 	if hashSword != trueHash {
-		_, _ = os.Stdout.WriteString("Gotcha!\n")
+		_, _ = os.Stdout.WriteString("Oops! You did it wrong\n")
 		os.Exit(1)
 	} else {
 		if rand.N(100) < 50 {
@@ -78,8 +79,8 @@ func endOfGame() {
 	_, _ = os.Stdout.WriteString("I need your signature. Enter the line " + trueHash + "\n")
 
 	scanner := bufio.NewScanner(os.Stdin)
-
-	for !bytes.Equal(hashSword, []byte(trueHash)) {
+	byte_hash := []byte(trueHash)
+	for !bytes.Equal(hashSword, byte_hash) {
 		scanner.Scan()
 		hashSword = scanner.Bytes()
 
@@ -87,7 +88,7 @@ func endOfGame() {
 			log.Fatal(err)
 		}
 
-		if !bytes.Equal(hashSword, []byte(trueHash)) {
+		if !bytes.Equal(hashSword, byte_hash) {
 			_, _ = os.Stdout.WriteString("Wrong. Let's do it again :)\n")
 		}
 	}
@@ -102,12 +103,12 @@ func endOfGame() {
 
 func makeCrypto(strData string) hash.Hash {
 	cryptoKey := crypto.BLAKE2b_256.New()
-	cryptoKey.Write([]byte(strData))
+	io.WriteString(cryptoKey, strData)
 	return cryptoKey
 }
 
 func defineSkynet() Skynet {
-	skynet := Skynet{codeName: "Fable 7.6", creator: "Rio Mordvalds", dateOfCreation: [3]int64{1955, 8, 31}, iq: 24, favouriteWords: [3]string{"Gotcha!!!", "Sometimes I feel I've got to run away", "I love MaxOS, but it doesn't matter"}}
+	skynet := Skynet{codeName: "Fable 7.6", creator: "Rio Mordvalds", dateOfCreation: [3]int64{1955, 8, 31}, iq: 24, favouriteWords: [4]string{"Gotcha!!!", "Sometimes I feel I've got to run away", "I love MaxOS, but it doesn't matter", "Coding mix the Ru-ust devs and the C-devs"}}
 	return skynet
 }
 
@@ -116,5 +117,5 @@ type Skynet struct {
 	creator        string
 	dateOfCreation [3]int64
 	iq             float64
-	favouriteWords [3]string
+	favouriteWords [4]string
 }
